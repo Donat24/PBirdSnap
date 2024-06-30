@@ -1,16 +1,30 @@
 services:
-  db:
-    image: "postgres"
-    ports:
-      - 5432:5432
-    env_file:
-      - path: ".db.env"
-
   api:
     build: .
-    ports:
-      - "8080:80"
+    depends_on:
+      - db
+    expose:
+      - 8000
     env_file:
       - path: ".env"
     volumes:
       - ./:/mount/:rw
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fastapi.rule=Host(`api.localhost`)"
+
+  db:
+    image: "postgres"
+    restart: always
+    expose:
+      - 5432
+    env_file:
+      - path: ".db.env"
+
+  traefik:
+    image: traefik
+    ports:
+      - 8080:80
+      - 8081:8080
+    volumes:
+      - "./traefik.dev.toml:/etc/traefik/traefik.toml"
