@@ -4,4 +4,4 @@ WORKDIR /birdsnap/
 COPY ./ /birdsnap/
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir --upgrade -r /birdsnap/requirements.txt 
-CMD ["fastapi", "run", "main.py", "--port", "8000"]
+CMD ["fastapi", "run", "main.py", "--port", "80"]
