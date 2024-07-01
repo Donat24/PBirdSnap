@@ -27,7 +27,7 @@ def get_config() -> Config:
         ),
         storage=StorageConfig(path=os.environ["STORAGEPATH"]),
         security=SecurityConfig(
-            api_key=os.environ["API_KEY"],
+            api_key=os.environ.get("API_KEY", None),
             password_salt=os.environ["PASSWORDSALT"],
         )
     )

@@ -3,6 +3,6 @@ from fastapi import FastAPI
 from error_handler.error_handler import CreateHTTPExceptionHandler
 
 
-def register(app: FastAPI):
+def create_error_handler(app: FastAPI):
     CreateHTTPExceptionHandler(app)
     CreateHTTPExceptionHandler(app)

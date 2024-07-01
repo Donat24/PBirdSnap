@@ -44,14 +44,13 @@ services:
       - traefik.http.routers.traefik-dashboard-https.middlewares=admin-auth
 
   api:
-    build: .
+    build: ./
     depends_on:
       - db
     ports:
       - 80:80
     restart: always
-    env_file:
-      - path: ".env"
+    env_file: ".env"
     networks:
       - traefik-public
     volumes:
@@ -77,12 +76,12 @@ services:
     restart: always
     ports:
       - 5432:5432
-    env_file:
-      - path: ".db.env"
+    env_file: ".db.env"
     networks:
       - traefik-public
     volumes:
       - /data/postgres:/var/lib/postgresql/data
 
 networks:
-  - traefik-public
+  traefik-public:
+    external: false
