@@ -1,7 +1,12 @@
 from fastapi import FastAPI
-from sqlalchemy.ext.asyncio import (AsyncEngine, AsyncSession,
-                                    async_sessionmaker, create_async_engine)
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
+from api.auth.failed import CreateAuthFailed
 from api.device.register import CreateRegisterDeviceEndpoint
 from api.like.like import CreateLikeEndpoint
 from api.like.unlike import CreateUnlikeEndpoint
@@ -20,6 +25,7 @@ def register(
     db_util: DBUtil,
     storage: Storage,
 ):
+    CreateAuthFailed(app)
     CreateGetEndpoint(app, sessionmaker, db_util)
     CreateGetAllEndpoint(app, sessionmaker, db_util)
     CreateUploadEndpoint(app, sessionmaker, storage)

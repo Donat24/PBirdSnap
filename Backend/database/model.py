@@ -3,8 +3,18 @@ import enum
 import uuid
 from typing import List, Optional
 
-from sqlalchemy import (ARRAY, UUID, Boolean, DateTime, Enum, Float,
-                        ForeignKey, Integer, String, func)
+from sqlalchemy import (
+    ARRAY,
+    UUID,
+    Boolean,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    func,
+)
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -99,6 +109,7 @@ class BirdSnapImage(Base):
 class BirdSnapStatus(str, enum.Enum):
     PROCESSING = "PROCESSING"
     AVAILABLE = "AVAILABLE"
+    NOBIRD = "NOBIRD"
     DELETED = "DELETED"
 
 
