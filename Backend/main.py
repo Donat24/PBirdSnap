@@ -8,7 +8,6 @@ from database.setup import create_engine_sessionmaker
 from database.util import create_db_util
 from error_handler.setup import create_error_handler
 from lifespan import create_lifespan
-from middleware.setup import MiddlewareCreator
 from storage.setup import create_storage
 
 
@@ -30,10 +29,6 @@ def setup(config:Config) -> FastAPI:
     # setup fastapi
     app = FastAPI(lifespan=lifespan)
     create_error_handler(app)
-
-    # middleware
-    create_middleware = MiddlewareCreator(config)
-    create_middleware(app)
 
     register_api(app, sessionmaker, db_util, storage)
     
