@@ -2,6 +2,7 @@ FROM python:3.12
 
 WORKDIR /birdsnap/
 COPY ./ /birdsnap/
+RUN apt-get install libmagic1
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir --upgrade -r /birdsnap/requirements.txt 
 CMD ["fastapi", "run", "main.py", "--port", "80"]
