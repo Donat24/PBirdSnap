@@ -64,13 +64,14 @@ def main(config:Config, frame_analyzer:Callable[[str], bool]):
     camera.capture_file(test_image_filename)
     
     try:
-        requests.post(
+        response = requests.post(
             url=config.api.test_url,
             auth=basic_auth,
             headers=headers,
-            files={"upload_file": open(test_image_filename, "rb")},
+            files={"image": open(test_image_filename, "rb")},
             verify=False,
         )
+        response.raise_for_status()
     except Exception as e:
         logging.error("unable to upload test-image",exc_info=e)
 
@@ -84,13 +85,14 @@ def main(config:Config, frame_analyzer:Callable[[str], bool]):
         if frame_analyzer(image_filename):
             try:
                 logging.info("new birdsnap created")
-                requests.post(
+                response = requests.post(
                     url=config.api.upload_url,
                     auth=basic_auth,
                     headers=headers,
-                    files={"upload_file": open(image_filename, "rb")},
+                    files={"image": open(image_filename, "rb")},
                     verify=False,
                 )
+                response.raise_for_status()
             except Exception as e:
                 logging.error("unable to upload test-image", exc_info=e)
 
