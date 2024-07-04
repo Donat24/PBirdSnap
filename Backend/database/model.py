@@ -87,6 +87,11 @@ class Device(Base):
         cascade="all, delete-orphan",
         lazy="selectin"
     )
+    testimages: Mapped[List["TestImage"]] = relationship(
+        back_populates="device",
+        cascade="all, delete-orphan",
+        lazy="selectin"
+    )
 
     def __repr__(self) -> str:
         return f"Device(id={self.id}, name={self.name}, owner_id={self.owner_id}, public_by_default={self.public_by_default})"
@@ -106,10 +111,29 @@ class BirdSnapImage(Base):
     def __repr__(self) -> str:
         return f"BirdSnapImage(id={self.id}, birdsnap_id={self.birdsnap_id}, path={self.path})"
 
+class TestImage(Base):
+    __tablename__ = "testimage"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    creation_time: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=func.now(),
+    )
+    device_id: Mapped[int] = mapped_column(ForeignKey("device.id"))
+    device: Mapped["Device"] = relationship(
+        back_populates="testimages",
+        lazy="selectin"
+    )
+    path: Mapped[str] = mapped_column(String)
+
+    def __repr__(self) -> str:
+        return f"TestImage(id={self.id}, device_id={self.device_id}, path={self.path})"
+
 class BirdSnapStatus(str, enum.Enum):
     PROCESSING = "PROCESSING"
     AVAILABLE = "AVAILABLE"
-    NOBIRD = "NOBIRD"
+    NO_BIRD_DETECTED = "NO_BIRD_DETECTED"
+    CLASSIFICATION_FAILED = "CLASSIFICATION_FAILED"
     DELETED = "DELETED"
 
 
@@ -127,7 +151,10 @@ class BirdSnap(Base):
         back_populates="birdsnaps",
         lazy="selectin"
     )
-    snap_time: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
+    snap_time: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=func.now(),
+    )
     images: Mapped[List["BirdSnapImage"]] = relationship(
         back_populates="birdsnap",
         cascade="all, delete-orphan",

@@ -4,8 +4,12 @@ from urllib.parse import urljoin, urlparse
 
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query, Request
 from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import (AsyncEngine, AsyncSession,
-                                    async_sessionmaker, create_async_engine)
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -29,9 +33,8 @@ def CreateGetEndpoint(
         description="returns one bird snap",
         tags=["snap"],
     )
+    #@internationalize(translate_birdsnap)
     async def getAll(
-        request: Request,
-
         # basic auth
         auth_username: str = Depends(get_current_username),
 

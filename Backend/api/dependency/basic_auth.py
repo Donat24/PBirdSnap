@@ -7,8 +7,12 @@ from fastapi.params import Depends
 from fastapi.routing import APIRoute
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import (AsyncEngine, AsyncSession,
-                                    async_sessionmaker, create_async_engine)
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 from sqlalchemy.orm.exc import NoResultFound
 
 from database.model import User
@@ -20,7 +24,6 @@ def get_current_username(
     credentials: HTTPBasicCredentials = Depends(security),
 ) -> str:
     return credentials.username
-
 
 def BasicAuthRoute(sessionmaker: async_sessionmaker[AsyncSession], db_util:DBUtil) -> Type[APIRoute]:
     
@@ -44,12 +47,7 @@ def BasicAuthRoute(sessionmaker: async_sessionmaker[AsyncSession], db_util:DBUti
                         raise HTTPException(status_code=401, detail="UNAUTORIZED")
 
                     #read credentials
-                    parts = base64.b64decode(credentials).decode("utf-8").split(":")
-                    username = parts[0]
-                    if len(parts) >= 2:
-                        password = ":".join(parts[1:])
-                    else:
-                        password = ""
+                    username, _, password = base64.b64decode(credentials).decode("utf-8").partition(":")
                     password = db_util.hash_func(password)
 
                     #read db

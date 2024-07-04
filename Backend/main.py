@@ -3,6 +3,7 @@ import logging
 from fastapi import FastAPI
 
 from api.register import register as register_api
+from bird_classifier.setup import create_classifier
 from config.config import Config, get_config
 from database.setup import create_engine_sessionmaker
 from database.util import create_db_util
@@ -23,6 +24,9 @@ def setup(config:Config) -> FastAPI:
     # storage
     storage = create_storage(config)
 
+    # birdclassifier
+    classifier = create_classifier(config)
+
     # lifespan
     lifespan = create_lifespan(engine)
 
@@ -30,7 +34,7 @@ def setup(config:Config) -> FastAPI:
     app = FastAPI(lifespan=lifespan)
     create_error_handler(app)
 
-    register_api(app, sessionmaker, db_util, storage)
+    register_api(app, config, sessionmaker, db_util, storage, classifier)
     
     return app
 

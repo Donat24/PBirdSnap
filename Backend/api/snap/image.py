@@ -5,26 +5,37 @@ from typing import Optional
 from uuid import UUID
 
 import magic
-from fastapi import (APIRouter, BackgroundTasks, Depends, FastAPI, File,
-                     Header, HTTPException, UploadFile)
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    FastAPI,
+    File,
+    Header,
+    HTTPException,
+    UploadFile,
+)
 from fastapi.responses import FileResponse
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import (AsyncEngine, AsyncSession,
-                                    async_sessionmaker, create_async_engine)
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound
 
 from api.dependency.basic_auth import BasicAuthRoute, get_current_username
 from config.config import Config
-from database.model import (BirdSnap, BirdSnapImage, BirdSnapStatus, Device,
-                            User)
+from database.model import BirdSnap, BirdSnapImage, BirdSnapStatus, Device, User
 from database.util import DBUtil
 from schema.response import ResponseStatus, StatusResponse
 from storage.storage import BadFileTypeError, Storage
 
 
 def CreateImageEndpoint(
-    app: FastAPI, sessionmaker: async_sessionmaker[AsyncSession],  db_util: DBUtil, storage: Storage
+    app: FastAPI, sessionmaker: async_sessionmaker[AsyncSession],  db_util: DBUtil, storage: Storage,
 ):
     router = APIRouter(
         route_class=BasicAuthRoute(sessionmaker, db_util)
@@ -66,9 +77,19 @@ def CreateImageEndpoint(
             
             if (not image.birdsnap.is_public) and image.birdsnap.device.owner.id != user.id:
                 raise HTTPException(
-                    status_code=400, detail="image not available"
+                    status_code=403, detail="access denied"
                 )
             
+            if image.birdsnap.status == BirdSnapStatus.DELETED:
+                raise HTTPException(
+                    status_code=400, detail="image got deleted"
+                )
+            
+            if image.birdsnap.status != BirdSnapStatus.AVAILABLE:
+                raise HTTPException(
+                    status_code=400, detail="image not available"
+                )
+
             try:
                 path = storage.get_birdsnapimage(image.path)
                 if path.suffix.lower() in ["jpg", "jpeg"]:
@@ -81,8 +102,8 @@ def CreateImageEndpoint(
             
             except Exception as e:
                 raise HTTPException(
-                    status_code=400, detail="image not available"
-                ) from e            
+                    status_code=500, detail="image not available"
+                ) from e          
     
     app.include_router(router)
             
