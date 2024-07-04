@@ -17,7 +17,6 @@ from fastapi import (
     UploadFile,
 )
 from fastapi.responses import FileResponse
-from inference_sdk import InferenceHTTPClient
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,

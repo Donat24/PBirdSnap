@@ -16,7 +16,6 @@ from fastapi import (
     HTTPException,
     UploadFile,
 )
-from inference_sdk import InferenceHTTPClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
