@@ -67,12 +67,6 @@ def CreateUploadEndpoint(
             if snap_time is None:
                 snap_time = datetime.datetime.now()
 
-            # checks mime
-            if not image.content_type in ["image/jpeg", "image/png"]:
-                raise HTTPException(
-                    status_code=415, detail="only supports jpeg and png"
-                )
-
             # save file
             try:
                 storage_path = storage.save_birdsnapimage(

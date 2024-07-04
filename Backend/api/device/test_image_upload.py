@@ -71,12 +71,6 @@ def CreateUploadTestImageEndpoint(
             if curr_time is None:
                 curr_time = datetime.datetime.now()
 
-            # checks mime
-            if not image.content_type in ["image/jpeg", "image/png"]:
-                raise HTTPException(
-                    status_code=415, detail="only supports jpeg and png"
-                )
-
             try:
                 device = (await session.execute(select(Device).where(Device.id == device_id))).scalar_one()
             except Exception as e:
