@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.orm import joinedload
 
 from api.dependency.basic_auth import BasicAuthRoute, get_current_username
-from database.model import BirdSnap, BirdSnapLike, Device, User
+from database.model import BirdSnap, BirdSnapLike, BirdSnapStatus, Device, User
 from database.util import DBUtil
 from schema import response
 
@@ -53,7 +53,11 @@ def CreateGetAllEndpoint(
                 raise HTTPException(status_code=400, detail="unknown user") from e
 
 
-            if username is not None and username != user.name:
+            if username is None:
+                query = select(BirdSnap).join(BirdSnap.device).join(Device.owner).where(
+                    BirdSnap.is_public == True
+                )
+            elif username != user.name:
                 query = select(BirdSnap).join(BirdSnap.device).join(Device.owner).where(
                     User.name == username
                 ).where(
@@ -63,6 +67,9 @@ def CreateGetAllEndpoint(
                 query = select(BirdSnap).join(BirdSnap.device).join(Device.owner).where(
                     User.name == user.name
                 )
+            
+            # only get available
+            query = query.where(BirdSnap.status == BirdSnapStatus.AVAILABLE)
 
             if since is not None:
                 query = query.where(

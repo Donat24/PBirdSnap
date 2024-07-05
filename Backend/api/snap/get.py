@@ -14,7 +14,7 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound
 
 from api.dependency.basic_auth import BasicAuthRoute, get_current_username
-from database.model import BirdSnap, BirdSnapLike, Device, User
+from database.model import BirdSnap, BirdSnapLike, BirdSnapStatus, Device, User
 from database.util import DBUtil
 from schema import response
 
@@ -49,7 +49,12 @@ def CreateGetEndpoint(
 
 
             try:
-                query = select(BirdSnap).where(BirdSnap.id == id)
+                query = select(BirdSnap).where(
+                    BirdSnap.id == id
+                ).where(
+                    BirdSnap.status == BirdSnapStatus.AVAILABLE
+                )
+                
                 birdsnap = (await session.execute(
                     query.options(
                         joinedload(BirdSnap.device)
